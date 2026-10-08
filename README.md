@@ -4,6 +4,14 @@ English · **[Español](README.es.md)**
 
 **Talk to a Telegram bot, get a tidy `.md` back.**
 
+<p align="center">
+  <img width="250" alt="1" src="https://github.com/user-attachments/assets/db41047c-ff4c-411b-973c-5408208d68bb" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img width="250" alt="2" src="https://github.com/user-attachments/assets/48291ab7-7d22-412d-acb9-a1723f348323" />
+</p>
+
+
+
 Yapr turns your voice notes into structured Markdown documents. Walk out of a meeting, a site visit, or just have an idea rattling around: record a voice note, ramble as much as you want, and the bot sends back a `.md` file with everything organized into clear sections.
 
 It's 100% self-hosted, BYOK (bring your own API key) and open source.
