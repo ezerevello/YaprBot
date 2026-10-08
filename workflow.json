@@ -1,0 +1,1195 @@
+{
+  "name": "Yapr",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "e882d49f-4a80-4961-ad0a-01a68e4a5897",
+      "name": "Telegram Trigger",
+      "webhookId": "34570c7f-0606-47ec-921e-1b10e84e5434",
+      "credentials": {
+        "telegramApi": {
+          "id": "H6TlAk4vHBGa94ck",
+          "name": "Yapr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8694697e-b04c-4749-8e09-90ee8a5cbc85",
+              "leftValue": "={{ $('Config').item.json.allowed_ids.split(',').map(s => s.trim()).includes(String($('Config').item.json.message.from.id)) }}",
+              "rightValue": "={{$('Config').item.json.allowed_ids.split(',')}}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        -96
+      ],
+      "id": "a4e405f3-7ea8-4b0f-b9ec-8ecea0bfe1b8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cb4c571b-eaf6-4f86-8f36-cd72cee7918b",
+              "name": "allowed_ids",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "aa91f5cc-210c-45df-a8d1-5ddb68bf95c0",
+              "name": "default_mode",
+              "value": "general",
+              "type": "string"
+            },
+            {
+              "id": "9ad35db5-91cd-4c3b-bf4d-f22799ded5ca",
+              "name": "language",
+              "value": "es",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -96
+      ],
+      "id": "6a7de4e9-4417-490a-886e-aaf62c3cec79",
+      "name": "Config"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    },
+                    "id": "52e12416-6d9e-4bf5-97e4-cd67863bc06f"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "679fd15d-2f4b-430e-aec1-d0e4a98e0b7c",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "rightValue": "=/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Command"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        -192
+      ],
+      "id": "e2141937-b33a-4f55-9312-eadaa2a72de3",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d5e8c105-1040-4311-8df4-fe3fe772c72d",
+              "name": "base_url",
+              "value": "https://api.groq.com/openai/v1/audio/transcriptions",
+              "type": "string"
+            },
+            {
+              "id": "f332cbc5-759d-4f18-9a73-359739636e6d",
+              "name": "model",
+              "value": "whisper-large-v3-turbo",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        -480
+      ],
+      "id": "11c7458e-c79b-4a3a-8a70-247317a39760",
+      "name": "STT"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01d762b9-2417-453a-b85d-39bc3db0e6d0",
+              "name": "base_url",
+              "value": "https://api.groq.com/openai/v1/chat/completions",
+              "type": "string"
+            },
+            {
+              "id": "d634b4e6-ccee-4435-a5c7-b143712a8f47",
+              "name": "model",
+              "value": "openai/gpt-oss-120b",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        -480
+      ],
+      "id": "79278033-70a0-40ba-aea1-0d2df1232375",
+      "name": "Text IA"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('STT').item.json.base_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "model",
+              "value": "={{ $('STT').item.json.model }}"
+            },
+            {
+              "name": "language",
+              "value": "={{ $('Config').item.json.language }}"
+            },
+            {
+              "name": "response_format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1792,
+        -480
+      ],
+      "id": "8ca3f3dd-6356-4ee0-a4f5-f561f9ee4e03",
+      "name": "STT Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "zsvhnOcgqnw094bM",
+          "name": "groq api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        -480
+      ],
+      "id": "996c0692-ec97-4cf3-932d-99c4e5e817b2",
+      "name": "Get audio",
+      "webhookId": "1f1aeec2-06ed-47c2-b179-836ab798b223",
+      "credentials": {
+        "telegramApi": {
+          "id": "H6TlAk4vHBGa94ck",
+          "name": "Yapr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const bin = $('Get audio').item.binary.data;\nbin.fileName = 'audio.ogg';\nbin.fileExtension = 'ogg';\nbin.mimeType = 'audio/ogg';\n\nreturn { json: $('Get audio').item.json, binary: $('Get audio').item.binary };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        -480
+      ],
+      "id": "f43327c8-2fda-4340-8fe8-3351169f3b09",
+      "name": "Audio .oga to .ogg"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Text IA').item.json.base_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  model: $('Text IA').item.json.model,\n  temperature: 0.3,\n  messages: [\n    { role: 'system', content: $('System prompt').item.json.system_prompt },\n    { role: 'user', content: 'Fecha de hoy: ' + $now.setLocale($('Config').item.json.language).toFormat('cccc d LLLL yyyy') + '\\n\\nTranscripción de la nota de voz:\\n\\n' + $('STT Request').item.json.text }\n  ]\n} }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2912,
+        -480
+      ],
+      "id": "c37f9974-b80e-44e8-80c8-d3e654add23f",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "zsvhnOcgqnw094bM",
+          "name": "groq api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "choices[0].message.content",
+        "options": {
+          "fileName": "={{ 'nota-' + $now.toFormat('yyyy-MM-dd-HHmm') + '.md' }}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3136,
+        -480
+      ],
+      "id": "e26d0b17-413c-46dc-a01d-d800d6dd7640",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d176ba6b-9b2a-4660-8bda-74eeb5b99e7d",
+              "name": "chat_id",
+              "value": "={{ String($('Telegram Trigger').item.json.message.chat.id) }}",
+              "type": "string"
+            },
+            {
+              "id": "059f90e0-5133-400a-b213-40894fdb873a",
+              "name": "command",
+              "value": "={{ $('Telegram Trigger').item.json.message.text.split(' ')[0].split('@')[0].toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "cd1b5708-7b48-481c-9dfb-8da7c8221072",
+              "name": "arg",
+              "value": "={{ $('Telegram Trigger').item.json.message.text.split(' ').slice(1).join(' ').trim().toLowerCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        0
+      ],
+      "id": "1608148d-797e-4141-bc8c-ec0d3e1d510f",
+      "name": "Parse command"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Parse command').item.json.command }}",
+                    "rightValue": "/modos",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "294a5e49-b489-418a-a02f-7e7e8c25eff9"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/modos"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1326bf45-a821-4a19-8ba1-df52a1fa5a6a",
+                    "leftValue": "={{ $('Parse command').item.json.command }}",
+                    "rightValue": "/modo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/modo"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        -16
+      ],
+      "id": "a798715f-e523-4e2b-9540-4e4d57ba0f34",
+      "name": "Command router"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst lines = rows.map(r => `• ${r.name}: ${r.description}`);\n\nconst text =\n  'Modos disponibles:\\n\\n' +\n  lines.join('\\n\\n') +\n  '\\n\\nCambiá con /modo <nombre>, por ejemplo: /modo ' + (rows[0]?.name ?? 'general');\n\nreturn [{ json: { chat_id: $('Parse command').first().json.chat_id, text } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        -288
+      ],
+      "id": "818ccd3e-0508-4de7-8b86-fc0feee0e283",
+      "name": "Build modes list"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c2dd0c21-2787-46a8-bd68-390873228668",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "={{ $('Parse command').first().json.arg }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "6b397274-7a8d-4636-bad0-0c5b1f81c2eb",
+              "leftValue": "={{ $('Parse command').first().json.arg }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        0
+      ],
+      "id": "f3444709-92e4-498d-baeb-f3d353e89315",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "bSr5HeOuQreIGEAs",
+          "mode": "list",
+          "cachedResultName": "chat_settings",
+          "cachedResultUrl": "/projects/ISFkuFjgzDSnmBjh/datatables/bSr5HeOuQreIGEAs"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Parse command').item.json.chat_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $('Parse command').item.json.chat_id }}",
+            "mode": "={{ $('Parse command').first().json.arg }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        -96
+      ],
+      "id": "86841ce8-398c-4da2-8662-2ff0ba11227e",
+      "name": "Upsert row(s)"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ '✅ Modo cambiado a ' + $('Parse command').first().json.arg }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2016,
+        -96
+      ],
+      "id": "72800c40-8aa1-4e04-99ab-20595df3e829",
+      "name": "Mode changed",
+      "webhookId": "d1373a4d-3124-47f2-9362-6a073e8a7a29",
+      "credentials": {
+        "telegramApi": {
+          "id": "H6TlAk4vHBGa94ck",
+          "name": "Yapr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Ese modo no existe. Mirá la lista con /modos y probá con /modo <nombre>.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1792,
+        96
+      ],
+      "id": "9f1aa378-fed2-48f7-8681-9ab2f72ebef0",
+      "name": "No mode",
+      "webhookId": "92fd0b96-7ad6-410c-9533-8fecb93196c6",
+      "credentials": {
+        "telegramApi": {
+          "id": "H6TlAk4vHBGa94ck",
+          "name": "Yapr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Build modes list').item.json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1792,
+        -288
+      ],
+      "id": "b7ad1df0-3a0d-4943-89be-831c72ee8b5d",
+      "name": "List modes",
+      "webhookId": "334576ac-0dfe-4207-897f-b014ac2cb8eb",
+      "credentials": {
+        "telegramApi": {
+          "id": "H6TlAk4vHBGa94ck",
+          "name": "Yapr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "✅ Listo papu"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3360,
+        -480
+      ],
+      "id": "d512792b-e354-4ada-8440-b13dad62b7a7",
+      "name": "Send .md file",
+      "webhookId": "8d1bbc8f-815a-447b-91b1-6aca8d312e08",
+      "credentials": {
+        "telegramApi": {
+          "id": "H6TlAk4vHBGa94ck",
+          "name": "Yapr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "bSr5HeOuQreIGEAs",
+          "mode": "list",
+          "cachedResultName": "chat_settings",
+          "cachedResultUrl": "/projects/ISFkuFjgzDSnmBjh/datatables/bSr5HeOuQreIGEAs"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ String($('Telegram Trigger').first().json.message.chat.id) }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2016,
+        -480
+      ],
+      "id": "f699d947-c65b-4798-9054-00290abd2bfa",
+      "name": "Get chat mode",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ec99687f-49ab-49de-b424-519501fae000",
+              "name": "mode",
+              "value": "={{ $('Get chat mode').item.json.mode || $('Config').first().json.default_mode }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2240,
+        -480
+      ],
+      "id": "e42fd586-87f9-487a-8b3f-1c4b906c3561",
+      "name": "Resolve mode"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5f7b1f88-c767-4eb4-82d3-2cf2133ad205",
+              "name": "system_prompt",
+              "value": "={{ $json.prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2688,
+        -480
+      ],
+      "id": "3faf5fc5-0b2f-4b06-9919-c5598c3d9c8c",
+      "name": "System prompt"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "laWQ9xU8RWndSCvb",
+          "mode": "list",
+          "cachedResultName": "modes",
+          "cachedResultUrl": "/projects/ISFkuFjgzDSnmBjh/datatables/laWQ9xU8RWndSCvb"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "name",
+              "keyValue": "={{ $json.mode }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2464,
+        -480
+      ],
+      "id": "2e6a8d9b-ca6a-4655-9c7e-7921581fa011",
+      "name": "Get mode prompt",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "laWQ9xU8RWndSCvb",
+          "mode": "list",
+          "cachedResultName": "modes",
+          "cachedResultUrl": "/projects/ISFkuFjgzDSnmBjh/datatables/laWQ9xU8RWndSCvb"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        -288
+      ],
+      "id": "66bce900-f451-4a54-acbb-69091365ad83",
+      "name": "Get all modes"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "laWQ9xU8RWndSCvb",
+          "mode": "list",
+          "cachedResultName": "modes",
+          "cachedResultUrl": "/projects/ISFkuFjgzDSnmBjh/datatables/laWQ9xU8RWndSCvb"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "name",
+              "keyValue": "={{ $('Parse command').first().json.arg }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "a3e18257-0b32-4a33-b3fc-3e69ae1ec1a1",
+      "name": "Get mode",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Ese modo no existe. Mirá la lista con /modos y probá con /modo <nombre>.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        192
+      ],
+      "id": "97828207-b8a4-4692-b23a-eaddfe40594f",
+      "name": "No mode fallback",
+      "webhookId": "92fd0b96-7ad6-410c-9533-8fecb93196c6",
+      "credentials": {
+        "telegramApi": {
+          "id": "H6TlAk4vHBGa94ck",
+          "name": "Yapr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Tu id es {{ $('Telegram Trigger').item.json.message.from.id }}.\nPedile al dueño que te agregue para usar Yapr.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "bbf6bdc9-a721-4b95-80b2-87264ed80706",
+      "name": "Unauthorized",
+      "webhookId": "73a8a9b3-896b-4812-b1e1-b83520d99ace",
+      "credentials": {
+        "telegramApi": {
+          "id": "H6TlAk4vHBGa94ck",
+          "name": "Yapr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "You can set Groq credentials here.\n\n - Name: Authorization\n - Value: Bearer [key]",
+        "height": 144
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1728,
+        -640
+      ],
+      "typeVersion": 1,
+      "id": "6633af61-9305-4bf5-92fb-161bb6df9b05",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "You must enter your allowed user IDs here.\n\nOtherwise the bot will not work for you",
+        "height": 144,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "ef3d7517-e8eb-4d0d-8afa-2057aa4248ae",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "STT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "STT": {
+      "main": [
+        [
+          {
+            "node": "Text IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text IA": {
+      "main": [
+        [
+          {
+            "node": "Get audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get audio": {
+      "main": [
+        [
+          {
+            "node": "Audio .oga to .ogg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio .oga to .ogg": {
+      "main": [
+        [
+          {
+            "node": "STT Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "STT Request": {
+      "main": [
+        [
+          {
+            "node": "Get chat mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send .md file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse command": {
+      "main": [
+        [
+          {
+            "node": "Command router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Command router": {
+      "main": [
+        [
+          {
+            "node": "Get all modes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get mode",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No mode fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build modes list": {
+      "main": [
+        [
+          {
+            "node": "List modes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Upsert row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert row(s)": {
+      "main": [
+        [
+          {
+            "node": "Mode changed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get chat mode": {
+      "main": [
+        [
+          {
+            "node": "Resolve mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "System prompt": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve mode": {
+      "main": [
+        [
+          {
+            "node": "Get mode prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get mode prompt": {
+      "main": [
+        [
+          {
+            "node": "System prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all modes": {
+      "main": [
+        [
+          {
+            "node": "Build modes list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get mode": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "b07570cd-151f-4dbd-a613-14fc73233f6e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7ef022a023eeaa07fa41c68e0b8ebe527ee416317fbd10447a730dd388f4560d"
+  },
+  "nodeGroups": [],
+  "id": "zk0KV3rNurAQtWYo",
+  "tags": []
+}
